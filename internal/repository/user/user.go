@@ -1,10 +1,12 @@
 package user
 
 import (
+	"context"
 	"log/slog"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/olegtemek/tg-store/internal/model"
+	"github.com/olegtemek/tg-store/internal/utils"
 )
 
 type Repository struct {
@@ -19,7 +21,24 @@ func NewRepository(log *slog.Logger, db *pgxpool.Pool) *Repository {
 	}
 }
 
-func (r *Repository) Create(email string, login string, password string) (*model.User, error) {
+func (r *Repository) Create(email string, password string) (*model.User, *utils.WrappError) {
+	user := &model.User{}
+	q := `INSERT INTO Users (email, password) VALUES ($1, $2) RETURNING id, email, password;`
+	err := r.db.QueryRow(context.Background(), q, email, password).Scan(&user.Id, &user.Email, &user.Password)
+	if err != nil {
+		return user, &utils.WrappError{Err: err}
+	}
+	return user, nil
+}
 
-	return nil, nil
+func (r *Repository) GetByEmail(email string) (*model.User, *utils.WrappError) {
+	user := &model.User{}
+	q := `SELECT id, email, password FROM Users WHERE email = $1`
+
+	err := r.db.QueryRow(context.Background(), q, email).Scan(&user.Id, &user.Email, &user.Password)
+	if err != nil {
+		return user, &utils.WrappError{Err: err}
+	}
+	return user, nil
+
 }

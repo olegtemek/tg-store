@@ -7,11 +7,12 @@ import (
 	"github.com/olegtemek/tg-store/internal/model"
 	"github.com/olegtemek/tg-store/internal/repository"
 	"github.com/olegtemek/tg-store/internal/service/user"
+	"github.com/olegtemek/tg-store/internal/utils"
 )
 
 type User interface {
-	Login()
-	Registration(dto *dto.UserRegistration) (*model.User, error)
+	Login(dto *dto.UserLogin) (*model.User, *utils.WrappError)
+	Registration(dto *dto.UserRegistration) (*model.User, *utils.WrappError)
 }
 type Service struct {
 	log *slog.Logger

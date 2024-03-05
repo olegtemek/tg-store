@@ -7,9 +7,11 @@ import (
 )
 
 type Config struct {
-	Env         string `env:"ENV"`
-	DatabaseUrl string `env:"DATABASE_URL"`
-	GRPC        GRPCConfig
+	Env                string `env:"ENV"`
+	DatabaseUrl        string `env:"DATABASE_URL"`
+	AccessTokenSecret  string `env:"ACCESS_TOKEN_SECRET"`
+	RefreshTokenSecret string `env:"REFRESH_TOKEN_SECRET"`
+	GRPC               GRPCConfig
 }
 
 type GRPCConfig struct {

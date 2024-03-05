@@ -22,7 +22,7 @@ type Server struct {
 	Log         *slog.Logger
 	Cfg         *config.Config
 	Srv         *grpc.Server
-	UserHandler tgstorev1.UnimplementedUserServer
+	UserHandler tgstorev1.UnimplementedUserServiceServer
 }
 
 func New(log *slog.Logger, cfg *config.Config, services *service.Service) *Server {
@@ -45,7 +45,7 @@ func New(log *slog.Logger, cfg *config.Config, services *service.Service) *Serve
 	))
 
 	// INIT ALL SERVICES
-	tgstorev1.RegisterUserServer(server, user.NewGRPCHandler(log, &services.User))
+	tgstorev1.RegisterUserServiceServer(server, user.NewGRPCHandler(log, &services.User, cfg.AccessTokenSecret, cfg.RefreshTokenSecret))
 
 	return &Server{
 		Log: log,

@@ -7,19 +7,23 @@ option go_package = "olegtemek.tg-store.v1;tgstorev1";
 
 
 // SERVICE USER 
-service User{
+service UserService{
   rpc Registration (RegistrationRequest) returns (RegistrationResponse){}
   rpc Login (LoginRequest) returns (LoginResponse){}
 }
 
+message User {
+  int64 id = 1;
+  string email = 2;
+}
+
 message RegistrationRequest {
   string email = 1;
-  string login = 2;
-  string password = 3;
+  string password = 2;
 }
 
 message RegistrationResponse {
-  int64 id = 1;
+  User user = 1;
   string accessToken = 2;
   string refreshToken = 3;
 }
@@ -30,7 +34,7 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string email = 1;
+  User user = 1;
   string accessToken = 2;
   string refreshToken = 3;
 }

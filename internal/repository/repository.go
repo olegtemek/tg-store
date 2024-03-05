@@ -6,10 +6,12 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/olegtemek/tg-store/internal/model"
 	"github.com/olegtemek/tg-store/internal/repository/user"
+	"github.com/olegtemek/tg-store/internal/utils"
 )
 
 type User interface {
-	Create(email string, login string, password string) (*model.User, error)
+	Create(email string, password string) (*model.User, *utils.WrappError)
+	GetByEmail(email string) (*model.User, *utils.WrappError)
 }
 
 type Repository struct {
