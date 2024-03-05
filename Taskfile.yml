@@ -1,11 +1,20 @@
 version: "3"
 
+dotenv: [".env"]
+
 tasks:
   generate:
     aliases:
       - gen
     cmds:
       - protoc -I proto proto/*.proto --go_out=./proto --go_opt=paths=source_relative --go-grpc_out=./proto --go-grpc_opt=paths=source_relative
+
   run:
     cmds:
       - go run cmd/tg-store/main.go
+
+  migrate:
+    aliases:
+      - mig
+    cmds:
+      - go run cmd/migrator/main.go

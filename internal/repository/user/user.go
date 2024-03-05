@@ -20,6 +20,6 @@ func NewRepository(log *slog.Logger, db *pgxpool.Pool) *Repository {
 }
 
 func (r *Repository) Create(email string, login string, password string) (*model.User, error) {
-	panic("IMPLEMENT ME")
+
 	return nil, nil
 }
