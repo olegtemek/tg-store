@@ -7,10 +7,9 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/olegtemek/tg-store/internal/dto"
-	"github.com/olegtemek/tg-store/internal/model"
 	"github.com/olegtemek/tg-store/internal/service"
 	"github.com/olegtemek/tg-store/internal/utils"
-	tgstorev1 "github.com/olegtemek/tg-store/proto"
+	pb "github.com/olegtemek/tg-store/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -20,7 +19,7 @@ type Handler struct {
 	accessTokenSecret  string
 	refreshTokenSecret string
 	service            service.User
-	tgstorev1.UnimplementedUserServiceServer
+	pb.UnimplementedUserServiceServer
 }
 
 func NewGRPCHandler(log *slog.Logger, service *service.User, accessTokenSecret string, refreshTokenSecret string) *Handler {
@@ -32,7 +31,7 @@ func NewGRPCHandler(log *slog.Logger, service *service.User, accessTokenSecret s
 	}
 }
 
-func (h *Handler) Registration(ctx context.Context, req *tgstorev1.RegistrationRequest) (*tgstorev1.RegistrationResponse, error) {
+func (h *Handler) Registration(ctx context.Context, req *pb.RegistrationRequest) (*pb.RegistrationResponse, error) {
 	dto := &dto.UserRegistration{
 		Email:    req.GetEmail(),
 		Password: req.GetPassword(),
@@ -46,18 +45,18 @@ func (h *Handler) Registration(ctx context.Context, req *tgstorev1.RegistrationR
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("error: %s", wrapErr.Error()))
 	}
 
-	accessToken, err := utils.GenerateAccessToken(h.accessTokenSecret, user.Id)
+	accessToken, err := utils.GenerateAccessToken(h.accessTokenSecret, int(user.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	refreshToken, err := utils.GenerateRefreshToken(h.refreshTokenSecret, user.Id)
+	refreshToken, err := utils.GenerateRefreshToken(h.refreshTokenSecret, int(user.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	return &tgstorev1.RegistrationResponse{
-		User: &tgstorev1.User{
+	return &pb.RegistrationResponse{
+		User: &pb.UserModel{
 			Id:    int64(user.Id),
 			Email: user.Email,
 		},
@@ -66,7 +65,7 @@ func (h *Handler) Registration(ctx context.Context, req *tgstorev1.RegistrationR
 	}, nil
 }
 
-func (h *Handler) Login(ctx context.Context, req *tgstorev1.LoginRequest) (*tgstorev1.LoginResponse, error) {
+func (h *Handler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	dto := &dto.UserLogin{
 		Email:    req.GetEmail(),
 		Password: req.GetPassword(),
@@ -80,18 +79,18 @@ func (h *Handler) Login(ctx context.Context, req *tgstorev1.LoginRequest) (*tgst
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("error: %s", wrapErr.Error()))
 	}
 
-	accessToken, err := utils.GenerateAccessToken(h.accessTokenSecret, user.Id)
+	accessToken, err := utils.GenerateAccessToken(h.accessTokenSecret, int(user.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	refreshToken, err := utils.GenerateRefreshToken(h.refreshTokenSecret, user.Id)
+	refreshToken, err := utils.GenerateRefreshToken(h.refreshTokenSecret, int(user.Id))
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, fmt.Sprintf("error: %s", err.Error()))
 	}
 
-	return &tgstorev1.LoginResponse{
-		User: &tgstorev1.User{
+	return &pb.LoginResponse{
+		User: &pb.UserModel{
 			Id:    int64(user.Id),
 			Email: user.Email,
 		},
@@ -100,11 +99,11 @@ func (h *Handler) Login(ctx context.Context, req *tgstorev1.LoginRequest) (*tgst
 	}, nil
 }
 
-func (h *Handler) GetProfile(ctx context.Context, req *tgstorev1.Empty) (*tgstorev1.ProfileResponse, error) {
-	user := ctx.Value("user").(*model.User)
+func (h *Handler) GetProfile(ctx context.Context, req *pb.Empty) (*pb.ProfileResponse, error) {
+	user := ctx.Value("user").(*pb.UserModel)
 
-	return &tgstorev1.ProfileResponse{
-		User: &tgstorev1.User{
+	return &pb.ProfileResponse{
+		User: &pb.UserModel{
 			Id:    int64(user.Id),
 			Email: user.Email,
 		},

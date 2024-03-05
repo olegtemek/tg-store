@@ -46,7 +46,8 @@ func (i *Interceptors) InterceptorAuth(ctx context.Context, req any, info *grpc.
 }
 
 func (i *Interceptors) authFunc(ctx context.Context, method string, accessTokenSecret string) (context.Context, error) {
-	if method == "/tgstore.UserService/Login" || method == "/tgstore/UserService/Registration" {
+
+	if method == "/tgstore.UserService/Login" || method == "/tgstore.UserService/Registration" {
 		return ctx, nil
 	}
 

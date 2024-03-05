@@ -9,8 +9,9 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"github.com/olegtemek/tg-store/internal/config"
 	"github.com/olegtemek/tg-store/internal/service"
+	"github.com/olegtemek/tg-store/internal/transport/grpc/folder"
 	"github.com/olegtemek/tg-store/internal/transport/grpc/user"
-	tgstorev1 "github.com/olegtemek/tg-store/proto"
+	pb "github.com/olegtemek/tg-store/proto"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -21,7 +22,7 @@ type Server struct {
 	Log         *slog.Logger
 	Cfg         *config.Config
 	Srv         *grpc.Server
-	UserHandler tgstorev1.UnimplementedUserServiceServer
+	UserHandler pb.UnimplementedUserServiceServer
 }
 
 func New(log *slog.Logger, cfg *config.Config, services *service.Service) *Server {
@@ -48,7 +49,8 @@ func New(log *slog.Logger, cfg *config.Config, services *service.Service) *Serve
 	))
 
 	// INIT ALL SERVICES
-	tgstorev1.RegisterUserServiceServer(server, user.NewGRPCHandler(log, &services.User, cfg.AccessTokenSecret, cfg.RefreshTokenSecret))
+	pb.RegisterUserServiceServer(server, user.NewGRPCHandler(log, &services.User, cfg.AccessTokenSecret, cfg.RefreshTokenSecret))
+	pb.RegisterFolderServiceServer(server, folder.NewGRPCHandler(log, &services.Folder))
 
 	return &Server{
 		Log: log,

@@ -4,9 +4,9 @@ import (
 	"log/slog"
 
 	"github.com/olegtemek/tg-store/internal/dto"
-	"github.com/olegtemek/tg-store/internal/model"
 	"github.com/olegtemek/tg-store/internal/repository"
 	"github.com/olegtemek/tg-store/internal/utils"
+	pb "github.com/olegtemek/tg-store/proto"
 )
 
 type Service struct {
@@ -21,7 +21,7 @@ func NewSevice(log *slog.Logger, repo *repository.User) *Service {
 	}
 }
 
-func (s *Service) Login(dto *dto.UserLogin) (*model.User, *utils.WrappError) {
+func (s *Service) Login(dto *dto.UserLogin) (*pb.UserModel, *utils.WrappError) {
 	user, wrappErr := s.repo.GetByEmail(dto.Email)
 	if wrappErr != nil {
 		return nil, wrappErr
@@ -35,7 +35,7 @@ func (s *Service) Login(dto *dto.UserLogin) (*model.User, *utils.WrappError) {
 	return user, nil
 }
 
-func (s *Service) Registration(dto *dto.UserRegistration) (*model.User, *utils.WrappError) {
+func (s *Service) Registration(dto *dto.UserRegistration) (*pb.UserModel, *utils.WrappError) {
 
 	hashedPassword, err := utils.HashPassword(dto.Password)
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *Service) Registration(dto *dto.UserRegistration) (*model.User, *utils.W
 	return user, nil
 }
 
-func (s *Service) GetById(userId int) (*model.User, *utils.WrappError) {
+func (s *Service) GetById(userId int) (*pb.UserModel, *utils.WrappError) {
 
 	user, wrapErr := s.repo.GetById(userId)
 	if wrapErr != nil {

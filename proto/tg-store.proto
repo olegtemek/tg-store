@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package tgstore;
 
-option go_package = "olegtemek.tg-store.v1;tgstorev1";
+option go_package = "github.com/olegtemek/tg-store;pb";
 
 
 message Empty{}
@@ -14,9 +14,10 @@ service UserService{
   rpc GetProfile (Empty) returns (ProfileResponse){}
 }
 
-message User {
+message UserModel {
   int64 id = 1;
   string email = 2;
+  string password = 3;
 }
 
 message RegistrationRequest {
@@ -25,7 +26,7 @@ message RegistrationRequest {
 }
 
 message RegistrationResponse {
-  User user = 1;
+  UserModel user = 1;
   string accessToken = 2;
   string refreshToken = 3;
 }
@@ -36,29 +37,62 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  User user = 1;
+  UserModel user = 1;
   string accessToken = 2;
   string refreshToken = 3;
 }
 
 message ProfileResponse{
-  User user = 1;
+  UserModel user = 1;
 }
 
 // SERVICE USER 
 
 
-// SERVICE Folder 
+// SERVICE FOLDER 
 service FolderService{
+  rpc Create (CreateFolderRequest) returns (CreateFolderResponse){}
+  rpc Update (UpdateFolderRequest) returns (UpdateFolderResponse){}
+  rpc GetAll (Empty) returns (GetAllFolderResponse){}
+  rpc Delete (DeleteFolderRequest) returns (DeleteFolderResponse){}
 }
 
-message Folder {
+message FolderModel {
+  int64 id = 1;
+  string title = 2;
+  int64 userId = 3;
+  int32 files = 4;
+}
+
+message CreateFolderRequest {
+  string title = 1;
+}
+
+message CreateFolderResponse {
+  FolderModel folder = 1;
+}
+
+message UpdateFolderRequest {
   int64 id = 1;
   string title = 2;
 }
 
-message CreateFolder {
-  string title = 1;
+message UpdateFolderResponse {
+  FolderModel folder = 1;
 }
 
-// SERVICE USER 
+message GetAllFolderResponse{
+  repeated FolderModel folders = 1;
+}
+
+message DeleteFolderRequest {
+  int64 id = 1;
+  string title = 2;
+}
+
+message DeleteFolderResponse {
+  FolderModel folder = 1;
+}
+
+
+// SERVICE FOLDER 
