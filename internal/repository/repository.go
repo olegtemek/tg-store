@@ -12,6 +12,7 @@ import (
 type User interface {
 	Create(email string, password string) (*model.User, *utils.WrappError)
 	GetByEmail(email string) (*model.User, *utils.WrappError)
+	GetById(id int) (*model.User, *utils.WrappError)
 }
 
 type Repository struct {

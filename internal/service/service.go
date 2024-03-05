@@ -13,6 +13,7 @@ import (
 type User interface {
 	Login(dto *dto.UserLogin) (*model.User, *utils.WrappError)
 	Registration(dto *dto.UserRegistration) (*model.User, *utils.WrappError)
+	GetById(userId int) (*model.User, *utils.WrappError)
 }
 type Service struct {
 	log *slog.Logger

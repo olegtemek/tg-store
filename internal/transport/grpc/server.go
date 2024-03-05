@@ -1,7 +1,6 @@
 package appgrpc
 
 import (
-	"context"
 	"fmt"
 	"log/slog"
 	"net"
@@ -39,9 +38,13 @@ func New(log *slog.Logger, cfg *config.Config, services *service.Service) *Serve
 			return status.Errorf(codes.Internal, "internal error")
 		}),
 	}
+
+	interceptors := NewInterceptors(log, cfg.AccessTokenSecret, &services.User)
+
 	server := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(recoveryOpts...),
-		logging.UnaryServerInterceptor(interceptorLogger(log), loggingOpts...),
+		logging.UnaryServerInterceptor(interceptors.InterceptorLogger(), loggingOpts...),
+		grpc.UnaryServerInterceptor(interceptors.InterceptorAuth),
 	))
 
 	// INIT ALL SERVICES
@@ -52,12 +55,6 @@ func New(log *slog.Logger, cfg *config.Config, services *service.Service) *Serve
 		Cfg: cfg,
 		Srv: server,
 	}
-}
-
-func interceptorLogger(l *slog.Logger) logging.Logger {
-	return logging.LoggerFunc(func(ctx context.Context, lvl logging.Level, msg string, fields ...any) {
-		l.Log(ctx, slog.Level(lvl), msg, fields...)
-	})
 }
 
 func (s *Server) ListenAndServe() error {

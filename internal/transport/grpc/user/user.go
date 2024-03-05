@@ -7,6 +7,7 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/olegtemek/tg-store/internal/dto"
+	"github.com/olegtemek/tg-store/internal/model"
 	"github.com/olegtemek/tg-store/internal/service"
 	"github.com/olegtemek/tg-store/internal/utils"
 	tgstorev1 "github.com/olegtemek/tg-store/proto"
@@ -96,5 +97,16 @@ func (h *Handler) Login(ctx context.Context, req *tgstorev1.LoginRequest) (*tgst
 		},
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+	}, nil
+}
+
+func (h *Handler) GetProfile(ctx context.Context, req *tgstorev1.Empty) (*tgstorev1.ProfileResponse, error) {
+	user := ctx.Value("user").(*model.User)
+
+	return &tgstorev1.ProfileResponse{
+		User: &tgstorev1.User{
+			Id:    int64(user.Id),
+			Email: user.Email,
+		},
 	}, nil
 }

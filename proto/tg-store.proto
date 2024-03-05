@@ -5,11 +5,13 @@ package tgstore;
 option go_package = "olegtemek.tg-store.v1;tgstorev1";
 
 
+message Empty{}
 
 // SERVICE USER 
 service UserService{
   rpc Registration (RegistrationRequest) returns (RegistrationResponse){}
   rpc Login (LoginRequest) returns (LoginResponse){}
+  rpc GetProfile (Empty) returns (ProfileResponse){}
 }
 
 message User {
@@ -37,6 +39,26 @@ message LoginResponse {
   User user = 1;
   string accessToken = 2;
   string refreshToken = 3;
+}
+
+message ProfileResponse{
+  User user = 1;
+}
+
+// SERVICE USER 
+
+
+// SERVICE Folder 
+service FolderService{
+}
+
+message Folder {
+  int64 id = 1;
+  string title = 2;
+}
+
+message CreateFolder {
+  string title = 1;
 }
 
 // SERVICE USER 

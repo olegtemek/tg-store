@@ -40,5 +40,16 @@ func (r *Repository) GetByEmail(email string) (*model.User, *utils.WrappError) {
 		return user, &utils.WrappError{Err: err}
 	}
 	return user, nil
+}
+
+func (r *Repository) GetById(id int) (*model.User, *utils.WrappError) {
+	user := &model.User{}
+	q := `SELECT id, email, password FROM Users WHERE id = $1`
+
+	err := r.db.QueryRow(context.Background(), q, id).Scan(&user.Id, &user.Email, &user.Password)
+	if err != nil {
+		return user, &utils.WrappError{Err: err}
+	}
+	return user, nil
 
 }

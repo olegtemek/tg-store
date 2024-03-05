@@ -49,3 +49,13 @@ func (s *Service) Registration(dto *dto.UserRegistration) (*model.User, *utils.W
 
 	return user, nil
 }
+
+func (s *Service) GetById(userId int) (*model.User, *utils.WrappError) {
+
+	user, wrapErr := s.repo.GetById(userId)
+	if wrapErr != nil {
+		return nil, wrapErr
+	}
+
+	return user, nil
+}

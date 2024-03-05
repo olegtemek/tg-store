@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UserServiceClient interface {
 	Registration(ctx context.Context, in *RegistrationRequest, opts ...grpc.CallOption) (*RegistrationResponse, error)
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	GetProfile(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProfileResponse, error)
 }
 
 type userServiceClient struct {
@@ -52,12 +53,22 @@ func (c *userServiceClient) Login(ctx context.Context, in *LoginRequest, opts ..
 	return out, nil
 }
 
+func (c *userServiceClient) GetProfile(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*ProfileResponse, error) {
+	out := new(ProfileResponse)
+	err := c.cc.Invoke(ctx, "/tgstore.UserService/GetProfile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
 type UserServiceServer interface {
 	Registration(context.Context, *RegistrationRequest) (*RegistrationResponse, error)
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	GetProfile(context.Context, *Empty) (*ProfileResponse, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -70,6 +81,9 @@ func (UnimplementedUserServiceServer) Registration(context.Context, *Registratio
 }
 func (UnimplementedUserServiceServer) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedUserServiceServer) GetProfile(context.Context, *Empty) (*ProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -120,6 +134,24 @@ func _UserService_Login_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/tgstore.UserService/GetProfile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetProfile(ctx, req.(*Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -135,7 +167,60 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "Login",
 			Handler:    _UserService_Login_Handler,
 		},
+		{
+			MethodName: "GetProfile",
+			Handler:    _UserService_GetProfile_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "tg-store.proto",
+}
+
+// FolderServiceClient is the client API for FolderService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type FolderServiceClient interface {
+}
+
+type folderServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFolderServiceClient(cc grpc.ClientConnInterface) FolderServiceClient {
+	return &folderServiceClient{cc}
+}
+
+// FolderServiceServer is the server API for FolderService service.
+// All implementations must embed UnimplementedFolderServiceServer
+// for forward compatibility
+type FolderServiceServer interface {
+	mustEmbedUnimplementedFolderServiceServer()
+}
+
+// UnimplementedFolderServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedFolderServiceServer struct {
+}
+
+func (UnimplementedFolderServiceServer) mustEmbedUnimplementedFolderServiceServer() {}
+
+// UnsafeFolderServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FolderServiceServer will
+// result in compilation errors.
+type UnsafeFolderServiceServer interface {
+	mustEmbedUnimplementedFolderServiceServer()
+}
+
+func RegisterFolderServiceServer(s grpc.ServiceRegistrar, srv FolderServiceServer) {
+	s.RegisterService(&FolderService_ServiceDesc, srv)
+}
+
+// FolderService_ServiceDesc is the grpc.ServiceDesc for FolderService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FolderService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "tgstore.FolderService",
+	HandlerType: (*FolderServiceServer)(nil),
+	Methods:     []grpc.MethodDesc{},
+	Streams:     []grpc.StreamDesc{},
+	Metadata:    "tg-store.proto",
 }

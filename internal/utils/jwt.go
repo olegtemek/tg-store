@@ -10,7 +10,7 @@ import (
 func GenerateAccessToken(secret string, userId int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"userId": userId,
-		"exp":    time.Now().Add(30 * time.Minute).Unix(),
+		"exp":    time.Now().Add(300 * time.Minute).Unix(),
 	})
 
 	tokenString, err := token.SignedString([]byte(secret))
